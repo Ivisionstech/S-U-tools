@@ -38,12 +38,21 @@ class AppServiceProvider extends ServiceProvider
             error_reporting(0);
         }
 
-        //force https
-        $url = parse_url(config('app.url'));
-
-        if ($url['scheme'] == 'https') {
-            \URL::forceScheme('https');
+        // ===== FIX FOR SSL/HTTPS ISSUE =====
+        // Check if APP_URL is set and valid
+        $appUrl = config('app.url');
+        if (!empty($appUrl)) {
+            $url = parse_url($appUrl);
+            
+            // Only force HTTPS if APP_URL scheme is HTTPS AND environment is NOT local
+            if (isset($url['scheme']) && $url['scheme'] == 'https' && env('APP_ENV') !== 'local') {
+                \URL::forceScheme('https');
+            } else {
+                // Force HTTP for local development
+                \URL::forceScheme('http');
+            }
         }
+        // ===== END FIX =====
 
         if (request()->has('lang')) {
             \App::setLocale(request()->get('lang'));
