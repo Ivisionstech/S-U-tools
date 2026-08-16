@@ -523,3 +523,21 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
     Route::get('/sells/invoice-url/{id}', [SellPosController::class, 'showInvoiceUrl']);
     Route::get('/show-notification/{id}', [HomeController::class, 'showNotification']);
 });
+
+
+// =============================================
+// CUSTOM PURCHASE PRINT ROUTES
+// =============================================
+Route::middleware(['auth'])->prefix('custom-print')->group(function () {
+    // Main print view
+    Route::get('/purchase/{id}', [App\Http\Controllers\CustomPurchasePrintController::class, 'print'])
+        ->name('custom.purchase.print');
+    
+    // Preview mode
+    Route::get('/purchase/preview/{id}', [App\Http\Controllers\CustomPurchasePrintController::class, 'preview'])
+        ->name('custom.purchase.preview');
+    
+    // Download PDF (optional - requires DOMPDF)
+    Route::get('/purchase/pdf/{id}', [App\Http\Controllers\CustomPurchasePrintController::class, 'downloadPdf'])
+        ->name('custom.purchase.pdf');
+});
