@@ -14,8 +14,8 @@ class CustomSellPrintController extends Controller
             $totals = SellPrintService::calculateTotals($sell);
             return view('custom-print.sell', compact('sell', 'totals'));
         } catch (\Exception $e) {
-            \Log::error('Custom Sell Print Error: ' . $e->getMessage());
-            abort(404, 'Sale not found. Error: ' . $e->getMessage());
+            // Show the actual error for debugging
+            return "Error: " . $e->getMessage() . " in " . $e->getFile() . " line " . $e->getLine();
         }
     }
 
@@ -39,7 +39,6 @@ class CustomSellPrintController extends Controller
             return view('custom-print.sell', compact('sell', 'totals'));
             
         } catch (\Exception $e) {
-            \Log::error('PDF Download Error: ' . $e->getMessage());
             return "PDF Error: " . $e->getMessage();
         }
     }

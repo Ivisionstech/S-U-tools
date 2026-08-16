@@ -16,6 +16,7 @@ class SellPrintService
      */
     public static function getSellData($id)
     {
+        // REMOVE 'createdBy' from this array
         $sell = Transaction::with([
             'contact',
             'business',
@@ -23,8 +24,8 @@ class SellPrintService
             'sell_lines',
             'sell_lines.product',
             'sell_lines.variations',
-            'payment_lines',
-            'createdBy'
+            'payment_lines'
+            // 'createdBy' - REMOVED
         ])->where('type', 'sell')
           ->findOrFail($id);
 
