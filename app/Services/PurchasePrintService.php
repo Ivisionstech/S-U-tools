@@ -2,22 +2,20 @@
 
 namespace App\Services;
 
-use App\Models\Transaction;
-use App\Models\Contact;
-use App\Models\Business;
-use App\Models\BusinessLocation;
-use App\Models\PurchaseLine;
-use App\Models\TransactionPayment;
+use App\Transaction;
+use App\Contact;
+use App\Business;
+use App\BusinessLocation;
+use App\PurchaseLine;
+use App\TransactionPayment;
 
 class PurchasePrintService
 {
     /**
      * Get purchase data with all relations
-     * Note: Purchases are stored in 'transactions' table with type = 'purchase'
      */
     public static function getPurchaseData($id)
     {
-        // Since purchases are stored in transactions table
         $purchase = Transaction::with([
             'contact',
             'business',
@@ -25,14 +23,10 @@ class PurchasePrintService
             'purchase_lines',
             'purchase_lines.product',
             'purchase_lines.variations',
-            'purchase_lines.variations.product_variation',
-            'purchase_lines.product.unit',
-            'payment_lines',
-            'createdBy'
+            'payment_lines'
         ])->where('type', 'purchase')
           ->findOrFail($id);
 
-        // Add additional properties to match the blade view expectations
         $purchase->ref_no = $purchase->ref_no ?? $purchase->invoice_no ?? 'N/A';
         $purchase->transaction_date = $purchase->transaction_date ?? $purchase->created_at;
         $purchase->final_total = $purchase->final_total ?? $purchase->total ?? 0;
@@ -48,17 +42,11 @@ class PurchasePrintService
         return $purchase;
     }
 
-    /**
-     * Format currency
-     */
     public static function formatCurrency($amount)
     {
         return number_format((float) $amount, 0);
     }
 
-    /**
-     * Convert number to words
-     */
     public static function numberToWords($number)
     {
         try {
@@ -66,15 +54,12 @@ class PurchasePrintService
                 $formatter = new \NumberFormatter('en', \NumberFormatter::SPELLOUT);
                 return ucwords($formatter->format((float) $number));
             }
-            return $number;
+            return (string) $number;
         } catch (\Exception $e) {
-            return $number;
+            return (string) $number;
         }
     }
 
-    /**
-     * Get payment method label
-     */
     public static function getPaymentMethod($method)
     {
         $methods = [
@@ -91,9 +76,6 @@ class PurchasePrintService
         return $methods[$method] ?? ucfirst($method);
     }
 
-    /**
-     * Get status color
-     */
     public static function getStatusColor($status)
     {
         $colors = [
@@ -110,9 +92,6 @@ class PurchasePrintService
         return $colors[$status] ?? '#6c757d';
     }
 
-    /**
-     * Calculate totals
-     */
     public static function calculateTotals($purchase)
     {
         $totalBeforeTax = 0;
@@ -145,9 +124,6 @@ class PurchasePrintService
         ];
     }
 
-    /**
-     * Calculate total paid
-     */
     public static function calculateTotalPaid($purchase)
     {
         $total = 0;

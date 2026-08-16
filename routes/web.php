@@ -1,5 +1,9 @@
 <?php
 
+Route::get('/test-top', function() {
+    return 'Routes file is loading!';
+});
+
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountReportsController;
 use App\Http\Controllers\AccountTypeController;
@@ -59,6 +63,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VariationTemplateController;
 use App\Http\Controllers\WarrantyController;
+use App\Http\Controllers\CustomPurchasePrintController; // <-- ADD THIS
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -524,20 +529,18 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
     Route::get('/show-notification/{id}', [HomeController::class, 'showNotification']);
 });
 
-
-// =============================================
 // CUSTOM PURCHASE PRINT ROUTES
-// =============================================
+
 Route::middleware(['auth'])->prefix('custom-print')->group(function () {
     // Main print view
-    Route::get('/purchase/{id}', [App\Http\Controllers\CustomPurchasePrintController::class, 'print'])
+    Route::get('/purchase/{id}', [CustomPurchasePrintController::class, 'print'])
         ->name('custom.purchase.print');
     
     // Preview mode
-    Route::get('/purchase/preview/{id}', [App\Http\Controllers\CustomPurchasePrintController::class, 'preview'])
+    Route::get('/purchase/preview/{id}', [CustomPurchasePrintController::class, 'preview'])
         ->name('custom.purchase.preview');
     
     // Download PDF (optional - requires DOMPDF)
-    Route::get('/purchase/pdf/{id}', [App\Http\Controllers\CustomPurchasePrintController::class, 'downloadPdf'])
+    Route::get('/purchase/pdf/{id}', [CustomPurchasePrintController::class, 'downloadPdf'])
         ->name('custom.purchase.pdf');
 });
