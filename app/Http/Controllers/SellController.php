@@ -406,9 +406,12 @@ class SellController extends Controller
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-left" role="menu">';
 
+                        // ===== VIEW BUTTON =====
                         if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view') || auth()->user()->can('view_own_sell_only')) {
                             $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> '.__('messages.view').'</a></li>';
                         }
+
+                        // ===== EDIT BUTTON =====
                         if (! $only_shipments) {
                             if ($row->is_direct_sale == 0) {
                                 if (auth()->user()->can('sell.update')) {
@@ -424,6 +427,7 @@ class SellController extends Controller
                                 }
                             }
 
+                            // ===== DELETE BUTTON =====
                             $delete_link = '<li><a href="'.action([\App\Http\Controllers\SellPosController::class, 'destroy'], [$row->id]).'" class="delete-sale"><i class="fas fa-trash"></i> '.__('messages.delete').'</a></li>';
                             if ($row->is_direct_sale == 0) {
                                 if (auth()->user()->can('sell.delete')) {
@@ -440,6 +444,26 @@ class SellController extends Controller
                             }
                         }
 
+                        // ============================================================
+                        // ===== INVOICE PRINT - Redirect to Custom Print Page =====
+                        // ============================================================
+                        if ($row->type == 'sell' || $row->type == 'sales_order') {
+                            $html .= '<li><a href="/custom-print/sell/'.$row->id.'" target="_blank"><i class="fas fa-print" aria-hidden="true"></i> '.__('lang_v1.print_invoice').'</a></li>';
+                        }
+
+                        // ============================================================
+                        // ===== PACKING SLIP - Keep if needed =====
+                        // ============================================================
+                        if (auth()->user()->can('print_invoice')) {
+                            $html .= '<li><a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'?package_slip=true"><i class="fas fa-file-alt" aria-hidden="true"></i> '.__('lang_v1.packing_slip').'</a></li>';
+
+                            // ===== DELIVERY NOTE - Keep if needed =====
+                            $html .= '<li><a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'?delivery_note=true"><i class="fas fa-file-alt" aria-hidden="true"></i> '.__('lang_v1.delivery_note').'</a></li>';
+                        }
+
+                        // ============================================================
+                        // ===== DOWNLOAD PDF - Keep if needed =====
+                        // ============================================================
                         if (config('constants.enable_download_pdf') && auth()->user()->can('print_invoice') && $sale_type != 'sales_order') {
                             $html .= '<li><a href="'.route('sell.downloadPdf', [$row->id]).'" target="_blank"><i class="fas fa-print" aria-hidden="true"></i> '.__('lang_v1.download_pdf').'</a></li>';
 
@@ -448,6 +472,9 @@ class SellController extends Controller
                             }
                         }
 
+                        // ============================================================
+                        // ===== DOWNLOAD DOCUMENT =====
+                        // ============================================================
                         if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.access')) {
                             if (! empty($row->document)) {
                                 $document_name = ! empty(explode('_', $row->document, 2)[1]) ? explode('_', $row->document, 2)[1] : $row->document;
@@ -458,19 +485,20 @@ class SellController extends Controller
                             }
                         }
 
+                        // ============================================================
+                        // ===== EDIT SHIPPING =====
+                        // ============================================================
                         if ($is_admin || auth()->user()->hasAnyPermission(['access_shipping', 'access_own_shipping', 'access_commission_agent_shipping'])) {
                             $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\SellController::class, 'editShipping'], [$row->id]).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-truck" aria-hidden="true"></i>'.__('lang_v1.edit_shipping').'</a></li>';
                         }
 
+                        // ============================================================
+                        // ===== SELL TYPE SPECIFIC BUTTONS =====
+                        // ============================================================
                         if ($row->type == 'sell') {
-                            if (auth()->user()->can('print_invoice')) {
-                                $html .= '<li><a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i> '.__('lang_v1.print_invoice').'</a></li>
-                                    <li><a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'?package_slip=true"><i class="fas fa-file-alt" aria-hidden="true"></i> '.__('lang_v1.packing_slip').'</a></li>';
-
-                                $html .= '<li><a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'?delivery_note=true"><i class="fas fa-file-alt" aria-hidden="true"></i> '.__('lang_v1.delivery_note').'</a></li>';
-                            }
                             $html .= '<li class="divider"></li>';
                             if (! $only_shipments) {
+                                // ===== ADD/EDIT PAYMENT =====
                                 if ($row->is_direct_sale == 0 && ! auth()->user()->can('sell.update') &&
                                 auth()->user()->can('edit_pos_payment')) {
                                     $html .= '<li><a href="'.route('edit-pos-payment', [$row->id]).'" 
@@ -478,6 +506,7 @@ class SellController extends Controller
                                     '</a></li>';
                                 }
 
+                                // ===== VIEW PAYMENTS =====
                                 if (auth()->user()->can('sell.payments') ||
                                     auth()->user()->can('edit_sell_payment') ||
                                     auth()->user()->can('delete_sell_payment')) {
@@ -488,19 +517,25 @@ class SellController extends Controller
                                     $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]).'" class="view_payment_modal"><i class="fas fa-money-bill-alt"></i> '.__('purchase.view_payments').'</a></li>';
                                 }
 
+                                // ===== SELL RETURN =====
                                 if (auth()->user()->can('sell.create') || auth()->user()->can('direct_sell.access')) {
-                                    // $html .= '<li><a href="' . action([\App\Http\Controllers\SellController::class, 'duplicateSell'], [$row->id]) . '"><i class="fas fa-copy"></i> ' . __("lang_v1.duplicate_sell") . '</a></li>';
-
                                     $html .= '<li><a href="'.action([\App\Http\Controllers\SellReturnController::class, 'add'], [$row->id]).'"><i class="fas fa-undo"></i> '.__('lang_v1.sell_return').'</a></li>
 
                                     <li><a href="'.action([\App\Http\Controllers\SellPosController::class, 'showInvoiceUrl'], [$row->id]).'" class="view_invoice_url"><i class="fas fa-eye"></i> '.__('lang_v1.view_invoice_url').'</a></li>';
                                 }
                             }
 
+                            // ===== NEW SALE NOTIFICATION =====
                             $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\NotificationController::class, 'getTemplate'], ['transaction_id' => $row->id, 'template_for' => 'new_sale']).'" class="btn-modal" data-container=".view_modal"><i class="fa fa-envelope" aria-hidden="true"></i>'.__('lang_v1.new_sale_notification').'</a></li>';
                         } else {
+                            // ===== SHIPPING DOCUMENTS =====
                             $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\SellController::class, 'viewMedia'], ['model_id' => $row->id, 'model_type' => \App\Transaction::class, 'model_media_type' => 'shipping_document']).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-paperclip" aria-hidden="true"></i>'.__('lang_v1.shipping_documents').'</a></li>';
                         }
+
+                        // ============================================================
+                        // ===== LABELS/BARCODE BUTTON - REMOVED =====
+                        // ============================================================
+                        // $html .= '<li><a href="'.action([\App\Http\Controllers\LabelsController::class, 'show']).'?sell_id='.$row->id.'" data-toggle="tooltip" title="'.__('lang_v1.label_help').'"><i class="fas fa-barcode"></i>'.__('barcode.labels').'</a></li>';
 
                         $html .= '</ul></div>';
 
@@ -1423,9 +1458,15 @@ class SellController extends Controller
                             }
                         }
 
+                        // ===== INVOICE PRINT - Redirect to Custom Print =====
                         $html .= '<li>
-                                    <a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i>'.__('messages.print').'</a>
+                                    <a href="/custom-print/sell/'.$row->id.'" target="_blank"><i class="fas fa-print" aria-hidden="true"></i>'.__('messages.print').'</a>
                                 </li>';
+
+                        // ===== ORIGINAL PRINT - REMOVED =====
+                        // $html .= '<li>
+                        //             <a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i>'.__('messages.print').'</a>
+                        //         </li>';
 
                         if (config('constants.enable_download_pdf')) {
                             $sub_status = $row->sub_status == 'proforma' ? 'proforma' : '';
@@ -1469,6 +1510,11 @@ class SellController extends Controller
                                         <a href="'.action("\App\Http\Controllers\SellPosController@showInvoiceUrl", [$row->id]).'" class="view_invoice_url"><i class="fas fa-eye"></i>'.__("lang_v1.view_quote_url").'</a>
                                     </li>';
                         }
+
+                        // ===== LABELS/BARCODE BUTTON - REMOVED =====
+                        // $html .= '<li>
+                        //             <a href="'.action([\App\Http\Controllers\LabelsController::class, 'show']).'?sell_id='.$row->id.'" data-toggle="tooltip" title="'.__('lang_v1.label_help').'"><i class="fas fa-barcode"></i>'.__('barcode.labels').'</a>
+                        //         </li>';
 
                         $html .= '</ul></div>';
 
@@ -1648,7 +1694,6 @@ class SellController extends Controller
                 'shipping_details', 'shipping_address',
                 'shipping_status', 'delivered_to', 'delivery_person', 'shipping_custom_field_1', 'shipping_custom_field_2', 'shipping_custom_field_3', 'shipping_custom_field_4', 'shipping_custom_field_5',
             ]);
-
 
             $business_id = $request->session()->get('user.business_id');
 
