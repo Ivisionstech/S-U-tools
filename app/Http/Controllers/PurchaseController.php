@@ -112,30 +112,33 @@ class PurchaseController extends Controller
                             </button>
                             <ul class="dropdown-menu dropdown-menu-left" role="menu">';
                     
-                    // View button
+                    // ===== VIEW BUTTON =====
                     if (auth()->user()->can('purchase.view')) {
                         $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\PurchaseController::class, 'show'], [$row->id]).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>'.__('messages.view').'</a></li>';
                     }
                     
-                    // Print button - REMOVED
+                    // ===== CUSTOM PRINT BUTTON - ADDED =====
+                    $html .= '<li><a href="/custom-print/purchase/'.$row->id.'" target="_blank"><i class="fas fa-file-invoice" aria-hidden="true"></i>Print</a></li>';
+                    
+                    // ===== PRINT BUTTON - REMOVED =====
                     // if (auth()->user()->can('purchase.view')) {
                     //     $html .= '<li><a href="#" class="print-invoice" data-href="'.action([\App\Http\Controllers\PurchaseController::class, 'printInvoice'], [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i>'.__('messages.print').'</a></li>';
                     // }
                     
-                    // Edit button
+                    // ===== EDIT BUTTON =====
                     if (auth()->user()->can('purchase.update')) {
                         $html .= '<li><a href="'.action([\App\Http\Controllers\PurchaseController::class, 'edit'], [$row->id]).'"><i class="fas fa-edit"></i>'.__('messages.edit').'</a></li>';
                     }
                     
-                    // Delete button
+                    // ===== DELETE BUTTON =====
                     if (auth()->user()->can('purchase.delete')) {
                         $html .= '<li><a href="'.action([\App\Http\Controllers\PurchaseController::class, 'destroy'], [$row->id]).'" class="delete-purchase"><i class="fas fa-trash"></i>'.__('messages.delete').'</a></li>';
                     }
 
-                    // Labels button - REMOVED
+                    // ===== LABELS/BARCODE BUTTON - REMOVED =====
                     // $html .= '<li><a href="'.action([\App\Http\Controllers\LabelsController::class, 'show']).'?purchase_id='.$row->id.'" data-toggle="tooltip" title="'.__('lang_v1.label_help').'"><i class="fas fa-barcode"></i>'.__('barcode.labels').'</a></li>';
 
-                    // Download Document button
+                    // ===== DOWNLOAD DOCUMENT BUTTON =====
                     if (auth()->user()->can('purchase.view') && ! empty($row->document)) {
                         $document_name = ! empty(explode('_', $row->document, 2)[1]) ? explode('_', $row->document, 2)[1] : $row->document;
                         $html .= '<li><a href="'.url('uploads/documents/'.$row->document).'" download="'.$document_name.'"><i class="fas fa-download" aria-hidden="true"></i>'.__('purchase.download_document').'</a></li>';
@@ -144,7 +147,7 @@ class PurchaseController extends Controller
                         }
                     }
 
-                    // Payment buttons
+                    // ===== PAYMENT BUTTONS =====
                     if (auth()->user()->can('purchase.payments') ||
                         auth()->user()->can('edit_purchase_payment') ||
                         auth()->user()->can('delete_purchase_payment')) {
@@ -157,19 +160,19 @@ class PurchaseController extends Controller
                         '" class="view_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true" ></i>'.__('purchase.view_payments').'</a></li>';
                     }
 
-                    // Purchase Return button
+                    // ===== PURCHASE RETURN BUTTON =====
                     if (auth()->user()->can('purchase.update')) {
                         $html .= '<li><a href="'.action([\App\Http\Controllers\PurchaseReturnController::class, 'add'], [$row->id]).
                         '"><i class="fas fa-undo" aria-hidden="true" ></i>'.__('lang_v1.purchase_return').'</a></li>';
                     }
 
-                    // Update Status button
+                    // ===== UPDATE STATUS BUTTON =====
                     if (auth()->user()->can('purchase.update') || auth()->user()->can('purchase.update_status')) {
                         $html .= '<li><a href="#" data-purchase_id="'.$row->id.
                         '" data-status="'.$row->status.'" class="update_status"><i class="fas fa-edit" aria-hidden="true" ></i>'.__('lang_v1.update_status').'</a></li>';
                     }
 
-                    // Notification buttons
+                    // ===== NOTIFICATION BUTTONS =====
                     if ($row->status == 'ordered') {
                         $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\NotificationController::class, 'getTemplate'], ['transaction_id' => $row->id, 'template_for' => 'new_order']).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-envelope" aria-hidden="true"></i> '.__('lang_v1.new_order_notification').'</a></li>';
                     } elseif ($row->status == 'received') {

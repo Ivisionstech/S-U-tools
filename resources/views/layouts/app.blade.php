@@ -141,91 +141,10 @@
             <div class="overlay tw-hidden"></div>
 
     {{-- ============================================================ --}}
-    {{-- ====== CUSTOM PRINT INJECTOR - Added for Purchase Print ====== --}}
+    {{-- ====== CUSTOM PRINT INJECTOR - REMOVED ====== --}}
     {{-- ============================================================ --}}
-    @php
-        $currentRoute = $request->route()->getName() ?? '';
-        $currentSegment = $request->segment(1);
-        $isPurchasePage = in_array($currentSegment, ['purchases', 'purchase', 'purchase-return']) 
-                          || str_contains($currentRoute, 'purchase');
-    @endphp
-
-    @if($isPurchasePage || $currentSegment == 'purchases')
-        <script src="{{ asset('js/custom-print-injector.js?v=' . ($asset_v ?? time())) }}"></script>
-        
-        {{-- Alternative: Direct button injection via JS --}}
-        <script>
-            $(document).ready(function() {
-                // Function to add custom print buttons to purchase table
-                function addCustomPrintButtons() {
-                    $('#purchase_table tbody tr').each(function() {
-                        var $row = $(this);
-                        
-                        // Skip if button already exists
-                        if ($row.find('.custom-print-btn').length) {
-                            return;
-                        }
-                        
-                        // Try to find purchase ID from various sources
-                        var purchaseId = $row.data('id');
-                        
-                        if (!purchaseId) {
-                            var viewBtn = $row.find('.view_purchase, .edit_purchase, .delete_purchase');
-                            if (viewBtn.length) {
-                                purchaseId = viewBtn.data('purchase_id') || viewBtn.data('id');
-                            }
-                        }
-                        
-                        // Try to extract from href
-                        if (!purchaseId) {
-                            var links = $row.find('a');
-                            links.each(function() {
-                                var href = $(this).attr('href');
-                                if (href && href.includes('/purchases/')) {
-                                    var matches = href.match(/\/purchases\/(\d+)/);
-                                    if (matches) {
-                                        purchaseId = matches[1];
-                                        return false;
-                                    }
-                                }
-                            });
-                        }
-                        
-                        if (purchaseId) {
-                            var actionCell = $row.find('td:first-child');
-                            
-                            var printBtn = $(
-                                '<a href="/custom-print/purchase/' + purchaseId + '" ' +
-                                'target="_blank" ' +
-                                'class="btn btn-success btn-xs custom-print-btn" ' +
-                                'style="margin:2px;border-radius:4px;padding:4px 8px;" ' +
-                                'data-toggle="tooltip" title="Print Custom Receipt">' +
-                                '<i class="fa fa-print"></i> <span style="font-size:10px;">New</span>' +
-                                '</a>'
-                            );
-                            
-                            actionCell.append(printBtn);
-                        }
-                    });
-                }
-
-                // Initial load
-                setTimeout(addCustomPrintButtons, 1500);
-
-                // After DataTable draw
-                $(document).on('draw.dt', function() {
-                    setTimeout(addCustomPrintButtons, 500);
-                });
-
-                // When modal opens
-                $(document).on('shown.bs.modal', function() {
-                    setTimeout(addCustomPrintButtons, 500);
-                });
-            });
-        </script>
-    @endif
-
-    {{-- ====== END CUSTOM PRINT INJECTOR ====== --}}
+    {{-- The "New" button has been removed from the action column --}}
+    {{-- The Custom Print button is now added directly in the PurchaseController dropdown --}}
 
 </body>
 <style>

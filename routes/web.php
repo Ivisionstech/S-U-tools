@@ -544,3 +544,18 @@ Route::middleware(['auth'])->prefix('custom-print')->group(function () {
     Route::get('/purchase/pdf/{id}', [CustomPurchasePrintController::class, 'downloadPdf'])
         ->name('custom.purchase.pdf');
 });
+
+// =============================================
+// CUSTOM SELL PRINT ROUTES
+// =============================================
+Route::middleware(['auth'])->prefix('custom-print')->group(function () {
+    // Sell print routes
+    Route::get('/sell/{id}', [App\Http\Controllers\CustomSellPrintController::class, 'print'])
+        ->name('custom.sell.print');
+    
+    Route::get('/sell/preview/{id}', [App\Http\Controllers\CustomSellPrintController::class, 'preview'])
+        ->name('custom.sell.preview');
+    
+    Route::get('/sell/pdf/{id}', [App\Http\Controllers\CustomSellPrintController::class, 'downloadPdf'])
+        ->name('custom.sell.pdf');
+});
