@@ -559,3 +559,18 @@ Route::middleware(['auth'])->prefix('custom-print')->group(function () {
     Route::get('/sell/pdf/{id}', [App\Http\Controllers\CustomSellPrintController::class, 'downloadPdf'])
         ->name('custom.sell.pdf');
 });
+
+// =============================================
+// CUSTOM PAYMENT PRINT ROUTES
+// =============================================
+Route::middleware(['auth'])->prefix('custom-print')->group(function () {
+    // Payment print routes
+    Route::get('/payment/{id}', [App\Http\Controllers\CustomPaymentPrintController::class, 'print'])
+        ->name('custom.payment.print');
+    
+    Route::get('/payment/preview/{id}', [App\Http\Controllers\CustomPaymentPrintController::class, 'preview'])
+        ->name('custom.payment.preview');
+    
+    Route::get('/payment/pdf/{id}', [App\Http\Controllers\CustomPaymentPrintController::class, 'downloadPdf'])
+        ->name('custom.payment.pdf');
+});
