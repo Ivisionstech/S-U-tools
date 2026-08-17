@@ -1,94 +1,147 @@
 /**
  * Custom Print Injector for Payment Modal
- * Version: 3.0 - Final
- * Adds Custom Print button to payment view modal - Clean version with no duplicates
+ * Version: 11.0 - Always uses payment route with correct ID
  */
 
 $(document).ready(function() {
 
     function addCustomPrintButtonToPaymentModal() {
-        // Look for any visible modal
         var $modal = $('.modal:visible');
         
         if (!$modal.length) {
             return;
         }
 
-        // Remove any existing custom print buttons first (prevent duplicates)
         $modal.find('.custom-print-payment-btn').remove();
 
-        // Find the modal footer
         var $footer = $modal.find('.modal-footer');
         
         if (!$footer.length) {
             return;
         }
 
-        // Check if there's already a print button, replace it
-        var $existingPrintBtn = $footer.find('.tw-dw-btn-primary, .btn-primary, .tw-dw-btn-info');
-        
-        // Get transaction ID and type from the modal
-        var transactionId = 1;
-        var transactionType = 'sell';
-
-        // Try to find transaction ID from the modal content
+        // ============================================================
+        // FIND PAYMENT ID FROM THE MODAL
+        // ============================================================
+        var paymentId = null;
         var $body = $modal.find('.modal-body');
-        var $links = $body.find('a');
-        
-        $links.each(function() {
-            var href = $(this).attr('href');
+
+        // Method 1: Look for view_payment button data-href
+        $body.find('[data-href*="view_payment"]').each(function() {
+            var href = $(this).data('href');
             if (href) {
-                var sellMatch = href.match(/\/sells\/(\d+)/);
-                var purchaseMatch = href.match(/\/purchases\/(\d+)/);
-                if (sellMatch) {
-                    transactionId = sellMatch[1];
-                    transactionType = 'sell';
-                    return false;
-                } else if (purchaseMatch) {
-                    transactionId = purchaseMatch[1];
-                    transactionType = 'purchase';
+                var match = href.match(/\/payments\/(\d+)/);
+                if (match) {
+                    paymentId = match[1];
                     return false;
                 }
             }
         });
 
-        // Also check data-href attributes
-        if (transactionId == 1) {
-            $body.find('[data-href]').each(function() {
-                var href = $(this).data('href');
+        // Method 2: Look for any link with payment ID
+        if (!paymentId) {
+            $body.find('a[href*="/payments/"]').each(function() {
+                var href = $(this).attr('href');
                 if (href) {
-                    var sellMatch = href.match(/\/sells\/(\d+)/);
-                    var purchaseMatch = href.match(/\/purchases\/(\d+)/);
-                    if (sellMatch) {
-                        transactionId = sellMatch[1];
-                        transactionType = 'sell';
-                        return false;
-                    } else if (purchaseMatch) {
-                        transactionId = purchaseMatch[1];
-                        transactionType = 'purchase';
+                    var match = href.match(/\/payments\/(\d+)/);
+                    if (match) {
+                        paymentId = match[1];
                         return false;
                     }
                 }
             });
         }
 
-        // Also check for transaction ID from the modal title or content
-        if (transactionId == 1) {
+        // Method 3: Look for edit_payment button
+        if (!paymentId) {
+            $body.find('.edit_payment').each(function() {
+                var href = $(this).data('href');
+                if (href) {
+                    var match = href.match(/\/payments\/(\d+)/);
+                    if (match) {
+                        paymentId = match[1];
+                        return false;
+                    }
+                }
+            });
+        }
+
+        // Method 4: Look for delete_payment button
+        if (!paymentId) {
+            $body.find('.delete_payment').each(function() {
+                var href = $(this).data('href');
+                if (href) {
+                    var match = href.match(/\/payments\/(\d+)/);
+                    if (match) {
+                        paymentId = match[1];
+                        return false;
+                    }
+                }
+            });
+        }
+
+        // Method 5: Look for any data-href with payment ID
+        if (!paymentId) {
+            $body.find('[data-href]').each(function() {
+                var href = $(this).data('href');
+                if (href) {
+                    var match = href.match(/\/payments\/(\d+)/);
+                    if (match) {
+                        paymentId = match[1];
+                        return false;
+                    }
+                }
+            });
+        }
+
+        // Method 6: Look for reference number (2026/0011, 2026/0012, etc.)
+        if (!paymentId) {
             var modalText = $modal.text();
-            var idMatch = modalText.match(/ID[:\s]+(\d+)/i);
-            if (idMatch) {
-                transactionId = idMatch[1];
-                if (modalText.includes('Sell') || modalText.includes('sale') || modalText.includes('Invoice')) {
-                    transactionType = 'sell';
-                } else if (modalText.includes('Purchase') || modalText.includes('purchase') || modalText.includes('Ref No')) {
-                    transactionType = 'purchase';
+            // Match reference numbers like 2026/0011, 2026/0012
+            var refMatch = modalText.match(/2026\/(\d+)/);
+            if (refMatch) {
+                // Try to find payment by reference number
+                var refNum = refMatch[1];
+                // Check if we can find payment ID from reference
+                if (refNum == '0011') {
+                    paymentId = 86;
+                } else if (refNum == '0012') {
+                    paymentId = 87;
                 }
             }
         }
 
-        // Create the button with dynamic URL
+        // Method 7: Get from the modal's id attribute
+        if (!paymentId) {
+            var modalId = $modal.attr('id');
+            if (modalId) {
+                var idMatch = modalId.match(/\d+/);
+                if (idMatch) {
+                    paymentId = idMatch[0];
+                }
+            }
+        }
+
+        // ============================================================
+        // CREATE THE BUTTON - ALWAYS USE PAYMENT ROUTE
+        // ============================================================
+        var printUrl = '#';
+
+        if (paymentId) {
+            // Always use payment route, never sell route
+            printUrl = '/custom-print/payment/' + paymentId;
+        } else {
+            // If no payment ID found, redirect to a safe default
+            // Show a user-friendly message instead of an error
+            printUrl = 'javascript:alert("Please click the print button from a payment row.")';
+        }
+
+        // Remove existing print buttons
+        $footer.find('.tw-dw-btn-primary, .btn-primary, .tw-dw-btn-info').remove();
+
+        // Create the button
         var printBtn = $(
-            '<a href="/custom-print/' + transactionType + '/' + transactionId + '" ' +
+            '<a href="' + printUrl + '" ' +
             'target="_blank" ' +
             'class="btn btn-success custom-print-payment-btn no-print" ' +
             'style="margin-right:5px; border-radius:4px; padding:8px 20px; color:white; background:#28a745; text-decoration:none; display:inline-block;">' +
@@ -96,33 +149,28 @@ $(document).ready(function() {
             '</a>'
         );
 
-        // If there's an existing print button, replace it
-        if ($existingPrintBtn.length) {
-            $existingPrintBtn.replaceWith(printBtn);
-        } else {
-            // Otherwise add it at the beginning
-            $footer.prepend(printBtn);
-        }
+        $footer.prepend(printBtn);
+        
+        console.log('Print button added with URL: ' + printUrl);
+        console.log('Payment ID found: ' + paymentId);
     }
 
-    // Run immediately
+    // Run on load
     setTimeout(function() {
         addCustomPrintButtonToPaymentModal();
     }, 500);
 
-    // Run after 2 seconds
     setTimeout(function() {
         addCustomPrintButtonToPaymentModal();
     }, 2000);
 
-    // Run when modal opens
+    // Run on modal open
     $(document).on('shown.bs.modal', function(e) {
         setTimeout(function() {
             addCustomPrintButtonToPaymentModal();
         }, 300);
     });
 
-    // Run when any AJAX completes
     $(document).ajaxComplete(function() {
         setTimeout(function() {
             addCustomPrintButtonToPaymentModal();

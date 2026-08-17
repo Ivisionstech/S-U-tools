@@ -14,7 +14,11 @@ class CustomPaymentPrintController extends Controller
             return view('custom-print.payment', compact('payment'));
         } catch (\Exception $e) {
             \Log::error('Custom Payment Print Error: ' . $e->getMessage());
-            abort(404, 'Payment not found. Error: ' . $e->getMessage());
+            
+            // Return a user-friendly error page instead of a 404
+            return view('custom-print.error', [
+                'message' => 'Payment not found. Please try again with a valid payment.'
+            ]);
         }
     }
 
@@ -38,7 +42,9 @@ class CustomPaymentPrintController extends Controller
             
         } catch (\Exception $e) {
             \Log::error('PDF Download Error: ' . $e->getMessage());
-            return "PDF Error: " . $e->getMessage();
+            return view('custom-print.error', [
+                'message' => 'Unable to generate PDF. Please try again.'
+            ]);
         }
     }
 }

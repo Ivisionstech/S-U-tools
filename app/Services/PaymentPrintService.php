@@ -13,8 +13,9 @@ class PaymentPrintService
     /**
      * Get payment data with all relations
      */
-    public static function getPaymentData($id)
+       public static function getPaymentData($id)
     {
+        // First try to find as payment ID
         $payment = TransactionPayment::with([
             'transaction',
             'transaction.contact',
@@ -22,10 +23,21 @@ class PaymentPrintService
             'transaction.location',
             'payment_account',
             'created_user'
-        ])->findOrFail($id);
+        ])->find($id);
 
-        // Get the transaction
+        // If not found, return null (will be handled by controller)
+        if (!$payment) {
+            throw new \Exception('Payment not found with ID: ' . $id);
+        }
+
+        // Get the transaction if exists
         $transaction = $payment->transaction;
+        
+        // If no transaction, try to get the contact
+        if (!$transaction && $payment->payment_for) {
+            $contact = Contact::find($payment->payment_for);
+            $payment->contact = $contact;
+        }
         
         // Add additional properties
         $payment->ref_no = $payment->payment_ref_no ?? 'N/A';
@@ -34,6 +46,7 @@ class PaymentPrintService
         $payment->method = $payment->method ?? '';
         $payment->note = $payment->note ?? '';
         $payment->currency_symbol = session('currency')['symbol'] ?? 'PKR';
+        $payment->is_advance = $payment->is_advance ?? 0;
 
         return $payment;
     }
@@ -80,7 +93,7 @@ class PaymentPrintService
             'custom_pay_1' => 'Custom Pay 1',
             'custom_pay_2' => 'Custom Pay 2',
             'custom_pay_3' => 'Custom Pay 3',
-            'advance' => 'Advance'
+            'advance' => 'Advance Payment'
         ];
         return $methods[$method] ?? ucfirst($method);
     }
@@ -97,7 +110,8 @@ class PaymentPrintService
             'purchase_return' => 'Purchase Return',
             'opening_balance' => 'Opening Balance',
             'expense' => 'Expense',
-            'payroll' => 'Payroll'
+            'payroll' => 'Payroll',
+            'advance' => 'Advance Payment'
         ];
         return $types[$type] ?? ucfirst($type);
     }

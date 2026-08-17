@@ -173,25 +173,6 @@
             margin-top: 10px;
         }
 
-        .party-block {
-            background: #f8fbff;
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 18px;
-            border-left: 4px solid #1f4e7a;
-        }
-        .party-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: #0a1a2b;
-        }
-        .party-details {
-            font-size: 14px;
-            color: #3d5a78;
-            margin-top: 5px;
-            line-height: 1.6;
-        }
-
         .payment-table {
             width: 100%;
             border-collapse: collapse;
@@ -238,7 +219,6 @@
             .payment-table th { background: #333 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .amount-words { background: #f0f0f0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .info-grid { background: #f5f5f5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .party-block { border-left-color: #333 !important; }
         }
 
         @media (max-width: 576px) {
