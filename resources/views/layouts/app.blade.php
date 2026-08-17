@@ -140,11 +140,7 @@
 
             <div class="overlay tw-hidden"></div>
 
-    {{-- ============================================================ --}}
-    {{-- ====== CUSTOM PRINT INJECTOR - REMOVED ====== --}}
-    {{-- ============================================================ --}}
-    {{-- The "New" button has been removed from the action column --}}
-    {{-- The Custom Print button is now added directly in the PurchaseController dropdown --}}
+   
 
 </body>
 <style>

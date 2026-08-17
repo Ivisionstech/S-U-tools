@@ -231,12 +231,18 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-text-white no-print" 
-              aria-label="Print" 
-                onclick="$(this).closest('div.modal').printThis();">
-                <i class="fa fa-print"></i> @lang( 'messages.print' )
-            </button>
-            <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white no-print" data-dismiss="modal">@lang( 'messages.close' )</button>
-        </div>
+    {{-- ===== PRINT BUTTON - Redirects to Custom Print ===== --}}
+    <a href="/custom-print/sell/1" 
+       target="_blank" 
+       class="tw-dw-btn tw-dw-btn-primary tw-text-white no-print" 
+       style="margin-right:5px;">
+        <i class="fa fa-print"></i> @lang( 'messages.print' )
+    </a>
+
+    <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white no-print" data-dismiss="modal">
+        @lang( 'messages.close' )
+    </button>
+</div>
     </div><!-- /.modal-content -->
+    
 </div><!-- /.modal-dialog -->

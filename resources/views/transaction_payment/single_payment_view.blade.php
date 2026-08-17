@@ -15,15 +15,23 @@
       </h4>
     </div>
     <div class="modal-body">
+      {{-- DEBUG: Show transaction info --}}
+      @if(!empty($transaction))
+        <div class="alert alert-info" style="display:none;">
+          Transaction ID: {{ $transaction->id ?? 'NULL' }}<br>
+          Transaction Type: {{ $transaction->type ?? 'NULL' }}
+        </div>
+      @endif
+
       @if(!empty($transaction))
       <div class="row">
         @if(in_array($transaction->type, ['purchase', 'purchase_return']))
             <div class="col-xs-6">
               @lang('purchase.supplier'):
               <address>
-                <strong>{{ $transaction->contact->supplier_business_name }}</strong>
-                {{ $transaction->contact->name }}
-                {!! $transaction->contact->contact_address !!}
+                <strong>{{ $transaction->contact->supplier_business_name ?? '' }}</strong>
+                {{ $transaction->contact->name ?? '' }}
+                {!! $transaction->contact->contact_address ?? '' !!}
                 @if(!empty($transaction->contact->tax_number))
                   <br>@lang('contact.tax_no'): {{$transaction->contact->tax_number}}
                 @endif
@@ -38,32 +46,32 @@
             <div class="col-xs-6">
               @lang('business.business'):
               <address>
-                <strong>{{ $transaction->business->name }}</strong>
+                <strong>{{ $transaction->business->name ?? '' }}</strong>
 
                 @if(!empty($transaction->location))
-                  {{ $transaction->location->name }}
+                  {{ $transaction->location->name ?? '' }}
                   @if(!empty($transaction->location->landmark))
                     <br>{{$transaction->location->landmark}}
                   @endif
                   @if(!empty($transaction->location->city) || !empty($transaction->location->state) || !empty($transaction->location->country))
-                    <br>{{implode(',', array_filter([$transaction->location->city, $transaction->location->state, $transaction->location->country]))}}
+                    <br>{{implode(',', array_filter([$transaction->location->city ?? '', $transaction->location->state ?? '', $transaction->location->country ?? '']))}}
                   @endif
                 @endif
                 
-                @if(!empty($transaction->business->tax_number_1))
-                  <br>{{$transaction->business->tax_label_1}}: {{$transaction->business->tax_number_1}}
+                @if(!empty($transaction->business->tax_number_1 ?? ''))
+                  <br>{{$transaction->business->tax_label_1 ?? ''}}: {{$transaction->business->tax_number_1 ?? ''}}
                 @endif
 
-                @if(!empty($transaction->business->tax_number_2))
-                  <br>{{$transaction->business->tax_label_2}}: {{$transaction->business->tax_number_2}}
+                @if(!empty($transaction->business->tax_number_2 ?? ''))
+                  <br>{{$transaction->business->tax_label_2 ?? ''}}: {{$transaction->business->tax_number_2 ?? ''}}
                 @endif
 
                 @if(!empty($transaction->location))
-                  @if(!empty($transaction->location->mobile))
-                    <br>@lang('contact.mobile'): {{$transaction->location->mobile}}
+                  @if(!empty($transaction->location->mobile ?? ''))
+                    <br>@lang('contact.mobile'): {{$transaction->location->mobile ?? ''}}
                   @endif
-                  @if(!empty($transaction->location->email))
-                    <br>@lang('business.email'): {{$transaction->location->email}}
+                  @if(!empty($transaction->location->email ?? ''))
+                    <br>@lang('business.email'): {{$transaction->location->email ?? ''}}
                   @endif
                 @endif
               </address>
@@ -75,7 +83,7 @@
               <address>
                 <strong>{{ $transaction->contact->name ?? '' }}</strong>
                
-                {!! $transaction->contact->contact_address !!}
+                {!! $transaction->contact->contact_address ?? '' !!}
                 @if(!empty($transaction->contact->tax_number))
                   <br>@lang('contact.tax_no'): {{$transaction->contact->tax_number}}
                 @endif
@@ -90,7 +98,7 @@
             @if(!empty($transaction->transaction_for))
               @lang('essentials::lang.payroll_for'):
               <address>
-                  <strong>{{ $transaction->transaction_for->user_full_name }}</strong>
+                  <strong>{{ $transaction->transaction_for->user_full_name ?? '' }}</strong>
                   @if(!empty($transaction->transaction_for->address))
                       <br>{{$transaction->transaction_for->address}}
                   @endif
@@ -107,31 +115,31 @@
           <div class="col-xs-6">
             @lang('business.business'):
             <address>
-              <strong>{{ $transaction->business->name }}</strong>
+              <strong>{{ $transaction->business->name ?? '' }}</strong>
               @if(!empty($transaction->location))
-                {{ $transaction->location->name }}
+                {{ $transaction->location->name ?? '' }}
                 @if(!empty($transaction->location->landmark))
                   <br>{{$transaction->location->landmark}}
                 @endif
                 @if(!empty($transaction->location->city) || !empty($transaction->location->state) || !empty($transaction->location->country))
-                  <br>{{implode(',', array_filter([$transaction->location->city, $transaction->location->state, $transaction->location->country]))}}
+                  <br>{{implode(',', array_filter([$transaction->location->city ?? '', $transaction->location->state ?? '', $transaction->location->country ?? '']))}}
                 @endif
               @endif
               
-              @if(!empty($transaction->business->tax_number_1))
-                <br>{{$transaction->business->tax_label_1}}: {{$transaction->business->tax_number_1}}
+              @if(!empty($transaction->business->tax_number_1 ?? ''))
+                <br>{{$transaction->business->tax_label_1 ?? ''}}: {{$transaction->business->tax_number_1 ?? ''}}
               @endif
 
-              @if(!empty($transaction->business->tax_number_2))
-                <br>{{$transaction->business->tax_label_2}}: {{$transaction->business->tax_number_2}}
+              @if(!empty($transaction->business->tax_number_2 ?? ''))
+                <br>{{$transaction->business->tax_label_2 ?? ''}}: {{$transaction->business->tax_number_2 ?? ''}}
               @endif
 
               @if(!empty($transaction->location))
-                @if(!empty($transaction->location->mobile))
-                  <br>@lang('contact.mobile'): {{$transaction->location->mobile}}
+                @if(!empty($transaction->location->mobile ?? ''))
+                  <br>@lang('contact.mobile'): {{$transaction->location->mobile ?? ''}}
                 @endif
-                @if(!empty($transaction->location->email))
-                  <br>@lang('business.email'): {{$transaction->location->email}}
+                @if(!empty($transaction->location->email ?? ''))
+                  <br>@lang('business.email'): {{$transaction->location->email ?? ''}}
                 @endif
               @endif
             </address>
@@ -190,15 +198,45 @@
             @endif
           </div>
       </div>
+
+      {{-- ============================================================ --}}
+      {{-- ===== CUSTOM PRINT BUTTON ===== --}}
+      {{-- ============================================================ --}}
+      @php
+          $transaction_id = $transaction->id ?? 0;
+          $transaction_type = $transaction->type ?? '';
+      @endphp
+      
+      @if(!empty($transaction_id) && ($transaction_type == 'sell' || $transaction_type == 'sell_return' || $transaction_type == 'purchase' || $transaction_type == 'purchase_return'))
+      <div class="row" style="margin-top:20px; border-top: 2px solid #1a3a5e; padding-top:15px;">
+          <div class="col-xs-12 text-center">
+              <a href="/custom-print/{{ in_array($transaction_type, ['sell', 'sell_return']) ? 'sell' : 'purchase' }}/{{ $transaction_id }}" 
+                 target="_blank" 
+                 class="btn btn-success btn-lg no-print" 
+                 style="border-radius:50px; padding:12px 40px; font-size:16px; font-weight:bold;">
+                  <i class="fas fa-print"></i> 
+                  @if(in_array($transaction_type, ['sell', 'sell_return']))
+                      @lang('lang_v1.print_invoice')
+                  @else
+                      @lang('lang_v1.print_purchase')
+                  @endif
+              </a>
+          </div>
+      </div>
+      @endif
     </div>
-    <div class="modal-footer">
-      <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-text-white no-print" 
-        aria-label="Print" 
-          onclick="$(this).closest('div.modal').printThis();">
+ <div class="modal-footer">
+    {{-- ===== PRINT BUTTON - Redirects to Custom Print ===== --}}
+    <a href="/custom-print/sell/1" 
+       target="_blank" 
+       class="tw-dw-btn tw-dw-btn-primary tw-text-white no-print" 
+       style="margin-right:5px;">
         <i class="fa fa-print"></i> @lang( 'messages.print' )
-      </button>
-      <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white no-print" data-dismiss="modal">@lang( 'messages.close' )
-      </button>
-    </div>
+    </a>
+
+    <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white no-print" data-dismiss="modal">
+        @lang( 'messages.close' )
+    </button>
+</div>
   </div>
 </div>

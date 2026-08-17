@@ -42,6 +42,8 @@ class TransactionPaymentController extends Controller
         //
     }
 
+    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -157,39 +159,34 @@ class TransactionPaymentController extends Controller
         return redirect()->back()->with(['status' => $output]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        if (! (auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments') || auth()->user()->can('hms.add_booking_payment'))) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        if (request()->ajax()) {
-            $transaction = Transaction::where('id', $id)
-                                        ->with(['contact', 'business', 'transaction_for'])
-                                        ->first();
-            $payments_query = TransactionPayment::where('transaction_id', $id);
-
-            $accounts_enabled = false;
-            if ($this->moduleUtil->isModuleEnabled('account')) {
-                $accounts_enabled = true;
-                $payments_query->with(['payment_account']);
-            }
-
-            $payments = $payments_query->get();
-            $location_id = ! empty($transaction->location_id) ? $transaction->location_id : null;
-            $payment_types = $this->transactionUtil->payment_types($location_id, true);
-
-            return view('transaction_payment.show_payments')
-                    ->with(compact('transaction', 'payments', 'payment_types', 'accounts_enabled'));
-        }
+   
+ /**
+ * Display the specified payment.
+ *
+ * @param  int  $id
+ * @return \Illuminate\Http\Response
+ */
+public function show($id)
+{
+    if (request()->ajax()) {
+        $business_id = request()->session()->get('user.business_id');
+        
+        $single_payment_line = TransactionPayment::where('business_id', $business_id)
+                                ->with(['transaction', 'transaction.contact', 'transaction.business', 'transaction.location'])
+                                ->findOrFail($id);
+        
+        // Get the transaction from the payment
+        $transaction = $single_payment_line->transaction;
+        
+        $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
+        
+        // Debug - check if transaction exists
+        // Log::info('Payment View - Transaction ID: ' . ($transaction->id ?? 'null'));
+        
+        return view('transaction_payment.single_payment_view')
+                ->with(compact('single_payment_line', 'transaction', 'payment_types'));
     }
-
+}
     /**
      * Show the form for editing the specified resource.
      *
