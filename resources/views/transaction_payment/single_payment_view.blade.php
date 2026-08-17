@@ -15,14 +15,6 @@
       </h4>
     </div>
     <div class="modal-body">
-      {{-- DEBUG: Show transaction info --}}
-      @if(!empty($transaction))
-        <div class="alert alert-info" style="display:none;">
-          Transaction ID: {{ $transaction->id ?? 'NULL' }}<br>
-          Transaction Type: {{ $transaction->type ?? 'NULL' }}
-        </div>
-      @endif
-
       @if(!empty($transaction))
       <div class="row">
         @if(in_array($transaction->type, ['purchase', 'purchase_return']))
@@ -198,45 +190,57 @@
             @endif
           </div>
       </div>
-
-      {{-- ============================================================ --}}
-      {{-- ===== CUSTOM PRINT BUTTON ===== --}}
-      {{-- ============================================================ --}}
-      @php
-          $transaction_id = $transaction->id ?? 0;
-          $transaction_type = $transaction->type ?? '';
-      @endphp
-      
-      @if(!empty($transaction_id) && ($transaction_type == 'sell' || $transaction_type == 'sell_return' || $transaction_type == 'purchase' || $transaction_type == 'purchase_return'))
-      <div class="row" style="margin-top:20px; border-top: 2px solid #1a3a5e; padding-top:15px;">
-          <div class="col-xs-12 text-center">
-              <a href="/custom-print/{{ in_array($transaction_type, ['sell', 'sell_return']) ? 'sell' : 'purchase' }}/{{ $transaction_id }}" 
-                 target="_blank" 
-                 class="btn btn-success btn-lg no-print" 
-                 style="border-radius:50px; padding:12px 40px; font-size:16px; font-weight:bold;">
-                  <i class="fas fa-print"></i> 
-                  @if(in_array($transaction_type, ['sell', 'sell_return']))
-                      @lang('lang_v1.print_invoice')
-                  @else
-                      @lang('lang_v1.print_purchase')
-                  @endif
-              </a>
-          </div>
-      </div>
-      @endif
     </div>
- <div class="modal-footer">
-    {{-- ===== PRINT BUTTON - Redirects to Custom Print ===== --}}
-    <a href="/custom-print/sell/1" 
-       target="_blank" 
-       class="tw-dw-btn tw-dw-btn-primary tw-text-white no-print" 
-       style="margin-right:5px;">
-        <i class="fa fa-print"></i> @lang( 'messages.print' )
-    </a>
 
-    <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white no-print" data-dismiss="modal">
-        @lang( 'messages.close' )
-    </button>
-</div>
+    {{-- ============================================================ --}}
+    {{-- ===== MODAL FOOTER - DYNAMIC PRINT BUTTON ===== --}}
+    {{-- ============================================================ --}}
+    <div class="modal-footer">
+        {{-- ============================================================ --}}
+        {{-- DYNAMIC PRINT BUTTON - Redirects to correct payment or invoice --}}
+        {{-- ============================================================ --}}
+        @php
+            $payment_id = $single_payment_line->id ?? 0;
+            $transaction_id = $transaction->id ?? 0;
+            $transaction_type = $transaction->type ?? '';
+        @endphp
+
+        @if(!empty($payment_id))
+            {{-- If we have a payment ID, always use payment route --}}
+            <a href="/custom-print/payment/{{ $payment_id }}" 
+               target="_blank" 
+               class="tw-dw-btn tw-dw-btn-success tw-text-white no-print" 
+               style="margin-right:5px; border-radius:4px; padding:8px 20px;">
+                <i class="fa fa-print"></i> @lang( 'messages.print' )
+            </a>
+        @elseif(!empty($transaction_id) && ($transaction_type == 'sell' || $transaction_type == 'sell_return'))
+            {{-- Fallback: If no payment ID but has sell transaction --}}
+            <a href="/custom-print/sell/{{ $transaction_id }}" 
+               target="_blank" 
+               class="tw-dw-btn tw-dw-btn-success tw-text-white no-print" 
+               style="margin-right:5px; border-radius:4px; padding:8px 20px;">
+                <i class="fa fa-print"></i> @lang( 'messages.print' )
+            </a>
+        @elseif(!empty($transaction_id) && ($transaction_type == 'purchase' || $transaction_type == 'purchase_return'))
+            {{-- Fallback: If no payment ID but has purchase transaction --}}
+            <a href="/custom-print/purchase/{{ $transaction_id }}" 
+               target="_blank" 
+               class="tw-dw-btn tw-dw-btn-success tw-text-white no-print" 
+               style="margin-right:5px; border-radius:4px; padding:8px 20px;">
+                <i class="fa fa-print"></i> @lang( 'messages.print' )
+            </a>
+        @else
+            {{-- If no ID found, show a disabled button --}}
+            <button class="tw-dw-btn tw-dw-btn-secondary tw-text-white no-print" 
+                    style="margin-right:5px; border-radius:4px; padding:8px 20px; cursor:not-allowed; opacity:0.6;" 
+                    disabled>
+                <i class="fa fa-print"></i> @lang( 'messages.print' )
+            </button>
+        @endif
+
+        <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white no-print" data-dismiss="modal">
+            @lang( 'messages.close' )
+        </button>
+    </div>
   </div>
 </div>

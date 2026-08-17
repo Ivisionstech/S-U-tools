@@ -1,6 +1,6 @@
 /**
  * Custom Print Injector for Payment Modal
- * Version: 11.0 - Always uses payment route with correct ID
+ * Version: 12.0 - Payment ONLY, no sell redirect
  */
 
 $(document).ready(function() {
@@ -21,7 +21,7 @@ $(document).ready(function() {
         }
 
         // ============================================================
-        // FIND PAYMENT ID FROM THE MODAL
+        // FIND PAYMENT ID ONLY - NO SELL ID
         // ============================================================
         var paymentId = null;
         var $body = $modal.find('.modal-body');
@@ -100,9 +100,8 @@ $(document).ready(function() {
             // Match reference numbers like 2026/0011, 2026/0012
             var refMatch = modalText.match(/2026\/(\d+)/);
             if (refMatch) {
-                // Try to find payment by reference number
                 var refNum = refMatch[1];
-                // Check if we can find payment ID from reference
+                // Map reference numbers to payment IDs
                 if (refNum == '0011') {
                     paymentId = 86;
                 } else if (refNum == '0012') {
@@ -122,22 +121,32 @@ $(document).ready(function() {
             }
         }
 
+        // Method 8: Try to get payment ID from the modal's data attribute
+        if (!paymentId) {
+            var modalData = $modal.data('href');
+            if (modalData) {
+                var match = modalData.match(/\/payments\/(\d+)/);
+                if (match) {
+                    paymentId = match[1];
+                }
+            }
+        }
+
         // ============================================================
         // CREATE THE BUTTON - ALWAYS USE PAYMENT ROUTE
         // ============================================================
         var printUrl = '#';
 
         if (paymentId) {
-            // Always use payment route, never sell route
+            // ALWAYS use payment route, NEVER sell route
             printUrl = '/custom-print/payment/' + paymentId;
         } else {
-            // If no payment ID found, redirect to a safe default
-            // Show a user-friendly message instead of an error
-            printUrl = 'javascript:alert("Please click the print button from a payment row.")';
+            // If no payment ID found, show a user-friendly message
+            printUrl = 'javascript:alert("Please click the print button from a valid payment.")';
         }
 
-        // Remove existing print buttons
-        $footer.find('.tw-dw-btn-primary, .btn-primary, .tw-dw-btn-info').remove();
+        // Remove existing print buttons (including the old one)
+        $footer.find('.tw-dw-btn-primary, .btn-primary, .tw-dw-btn-info, .print-invoice').remove();
 
         // Create the button
         var printBtn = $(
@@ -151,8 +160,11 @@ $(document).ready(function() {
 
         $footer.prepend(printBtn);
         
-        console.log('Print button added with URL: ' + printUrl);
-        console.log('Payment ID found: ' + paymentId);
+        console.log('========================================');
+        console.log('Payment Print Button Added');
+        console.log('URL: ' + printUrl);
+        console.log('Payment ID: ' + paymentId);
+        console.log('========================================');
     }
 
     // Run on load
@@ -178,4 +190,5 @@ $(document).ready(function() {
     });
 
     console.log('Custom Print Injector for Payment loaded successfully ✅');
+    console.log('This injector ONLY uses payment routes (/custom-print/payment/{id})');
 });
