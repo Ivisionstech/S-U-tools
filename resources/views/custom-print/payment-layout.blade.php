@@ -6,174 +6,164 @@
     <title>@yield('title', 'Payment Receipt')</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+
         body {
-            background: #f0f2f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
+            background: #eef2f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1a1a1a;
+            padding: 24px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-        }
-        .receipt-wrapper {
-            max-width: 650px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
-            padding: 35px 35px 30px;
+            align-items: flex-start;
+            -webkit-font-smoothing: antialiased;
         }
 
+        .receipt-wrapper {
+            max-width: 750px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            padding: 32px 40px;
+            border: 1px solid #e1e8ed;
+        }
+
+        /* ===== ACTION BUTTONS ===== */
         .top-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            margin-bottom: 24px;
         }
         .top-actions .btn {
-            padding: 10px 24px;
+            padding: 9px 18px;
             border: none;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: 0.2s;
             text-decoration: none;
+            transition: all 0.2s ease-in-out;
         }
-        .top-actions .btn-print { background: #1a3a5e; color: white; }
-        .top-actions .btn-print:hover { background: #0f2a44; }
-        .top-actions .btn-pdf { background: #dc3545; color: white; }
-        .top-actions .btn-pdf:hover { background: #b02a37; }
-        .top-actions .btn-close { background: #6c757d; color: white; }
-        .top-actions .btn-close:hover { background: #5a6268; }
+        .top-actions .btn-print { 
+            background: #0f172a; 
+            color: #ffffff; 
+        }
+        .top-actions .btn-print:hover { 
+            background: #1e293b; 
+            transform: translateY(-1px);
+        }
+        .top-actions .btn-pdf { 
+            background: #dc2626; 
+            color: #ffffff; 
+        }
+        .top-actions .btn-pdf:hover { 
+            background: #b91c1c; 
+            transform: translateY(-1px);
+        }
+        .top-actions .btn-close { 
+            background: #f1f5f9; 
+            color: #475569; 
+            border: 1px solid #cbd5e1;
+        }
+        .top-actions .btn-close:hover { 
+            background: #e2e8f0; 
+            color: #0f172a;
+        }
 
-        /* ===== HEADER - Without Logo ===== */
+        /* ===== HEADER SECTION ===== */
         .header-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 16px;
+            border-bottom: 1.5px solid #000000;
+            position: relative;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            min-width: 120px;
+        }
+        .header-left img {
+            max-height: 85px;
+            width: auto;
+            object-fit: contain;
+        }
+        .header-center {
             text-align: center;
-            border-bottom: 2px solid #1a3a5e;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .company-info h1 {
-            font-size: 28px;
+            font-size: 16px; /* Increased from 13px */
             font-weight: 700;
-            color: #1a3a5e;
-            letter-spacing: 3px;
-        }
-        .company-info .tagline {
-            font-size: 14px;
-            color: #4a607a;
-            font-weight: 500;
-        }
-        .company-info .address {
-            font-size: 12px;
-            color: #6b7f94;
-            margin-top: 2px;
+            line-height: 1.5;
+            color: #000000;
+            flex-grow: 1;
+            padding: 0 15px;
         }
 
         /* ===== RECEIPT TITLE ===== */
         .receipt-title {
             text-align: center;
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a3a5e;
-            letter-spacing: 4px;
-            padding: 10px 0;
-            border-bottom: 2px dashed #dce3ec;
-            margin-bottom: 20px;
-        }
-
-        /* ===== PAYMENT DETAILS (Payment No, Party, Account, Date) ===== */
-        .payment-info {
-            background: #f8fbff;
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 18px;
-            border-left: 4px solid #1f4e7a;
-        }
-        .payment-info .row {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            font-size: 14px;
-        }
-        .payment-info .row .label {
-            color: #4a607a;
-            font-weight: 500;
-        }
-        .payment-info .row .value {
-            font-weight: 600;
-            color: #0a1a2b;
-        }
-        .payment-info .party-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: #0a1a2b;
-            margin-bottom: 4px;
-        }
-        .payment-info .party-details {
-            font-size: 13px;
-            color: #3d5a78;
-            line-height: 1.6;
-        }
-
-        /* ===== AMOUNT SECTION ===== */
-        .amount-section {
-            text-align: center;
-            padding: 18px 0 12px;
-            border-top: 2px solid #e8edf5;
-            border-bottom: 2px solid #e8edf5;
-            margin-bottom: 16px;
-        }
-        .amount-number {
-            font-size: 34px;
+            font-size: 26px; /* Increased from 19px */
             font-weight: 800;
-            color: #0f3b5e;
-            letter-spacing: 1px;
-        }
-        .amount-words {
-            background: #eaf1fb;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            color: #1a3a5e;
-            font-size: 15px;
-            margin-top: 10px;
+            text-transform: uppercase;
+            padding: 12px 0;
+            border-bottom: 1.5px solid #000000;
+            margin-bottom: 20px;
+            letter-spacing: 0.8px;
+            color: #000000;
         }
 
-        /* ===== FOOTER ===== */
-        .receipt-footer {
-            border-top: 2px dashed #dce3ec;
-            padding-top: 18px;
-            margin-top: 20px;
+        /* ===== PAYMENT DETAILS ===== */
+        .payment-details {
+            padding: 4px 0;
+        }
+        .detail-row {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            font-size: 12px;
-            color: #6b7f94;
+            align-items: baseline;
+            padding: 5px 0;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+        .detail-row .label {
+            font-weight: 700;
+            width: 160px;
+            flex-shrink: 0;
+            color: #000000;
+        }
+        .detail-row .value {
+            font-weight: 700;
+            color: #000000;
+            word-break: break-word;
         }
 
         /* ===== PRINT STYLES ===== */
         @media print {
-            body { background: white !important; padding: 0 !important; }
-            .receipt-wrapper { box-shadow: none !important; border: none !important; padding: 20px !important; border-radius: 0 !important; }
-            .top-actions { display: none !important; }
-            .no-print { display: none !important; }
-            .amount-words { background: #f0f0f0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .payment-info { background: #f5f5f5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border-left-color: #333 !important; }
-        }
-
-        @media (max-width: 576px) {
-            .receipt-wrapper { padding: 20px 15px; }
-            .payment-info .row { flex-direction: column; }
-            .amount-number { font-size: 26px; }
-            .top-actions { justify-content: center; }
+            body { 
+                background: #ffffff !important; 
+                padding: 0 !important; 
+            }
+            .receipt-wrapper { 
+                box-shadow: none !important; 
+                border: none !important; 
+                padding: 0 !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+            }
+            .top-actions, .no-print { 
+                display: none !important; 
+            }
+            .header-section, .receipt-title {
+                border-color: #000000 !important;
+            }
         }
     </style>
     @yield('extra_styles')
@@ -193,18 +183,7 @@
         </button>
     </div>
 
-    {{-- ===== HEADER - Without Logo ===== --}}
-    <div class="header-section">
-        <div class="company-info">
-            <h1>S.U TOOLS</h1>
-            <div class="tagline">Pakistan</div>
-            <div class="address">Gujranwala, Pakistan</div>
-        </div>
-    </div>
-
-    <div class="content-section">
-        @yield('content')
-    </div>
+    @yield('content')
     
 </div>
 <script>
