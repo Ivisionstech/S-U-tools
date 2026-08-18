@@ -64,40 +64,20 @@
             width: 80px;
             height: 80px;
             flex-shrink: 0;
-            border-radius: 8px;
-            border: 2px solid #e8edf5;
-            background-color: #f8faff;
-            overflow: hidden;
-            position: relative;
-        }
-        .logo-img {
-            width: 100%;
-            height: 100%;
-            background-image: url('{{ asset('img/Su-logo.jpeg') }}');
-            background-size: cover;
-            background-position: center;
-        }
-        .logo-print {
-            display: none;
-            width: 100%;
-            height: 100%;
-        }
-        .logo-print img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .logo-fallback {
-            display: none;
-            width: 100%;
-            height: 100%;
-            background: #1a3a5e;
-            color: white;
-            font-weight: 700;
-            font-size: 20px;
+            background: transparent;
+            border: none;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
+        .logo-img-direct {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+            background: transparent;
+        }
+
         .company-info { flex: 1; }
         .company-info h1 {
             font-size: 28px;
@@ -323,8 +303,7 @@
             .invoice-wrapper { box-shadow: none !important; border: none !important; padding: 20px !important; border-radius: 0 !important; }
             .top-actions { display: none !important; }
             .no-print { display: none !important; }
-            .logo-img { display: none !important; }
-            .logo-print { display: block !important; }
+            .logo-img-direct { display: block !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .items-table thead th { background: #333 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .totals-table .net-balance td { background: #e8e8e8 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .payment-table th { background: #e8e8e8 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -364,11 +343,7 @@
 
     <div class="header-section">
         <div class="logo-container">
-            <div class="logo-img" onerror="this.className='logo-img error';"></div>
-            <div class="logo-print">
-                <img src="{{ public_path('img/Su-logo.PNG') }}" alt="S.U Tools">
-            </div>
-            <div class="logo-fallback">SU</div>
+            <img src="{{ asset('img/Su-logo.PNG') }}" alt="S.U Tools" class="logo-img-direct">
         </div>
         <div class="company-info">
             <h1>S.U TOOLS</h1>
