@@ -25,7 +25,6 @@
             padding: 40px 40px 30px;
         }
 
-        /* ===== TOP BUTTONS ===== */
         .top-actions {
             display: flex;
             justify-content: flex-end;
@@ -53,9 +52,6 @@
         .top-actions .btn-close { background: #6c757d; color: white; }
         .top-actions .btn-close:hover { background: #5a6268; }
 
-        /* ========================================== */
-        /* ===== HEADER SECTION ===== */
-        /* ========================================== */
         .header-section {
             display: flex;
             align-items: center;
@@ -65,56 +61,25 @@
             margin-bottom: 20px;
         }
 
-        /* Logo - Left Side */
         .logo-container {
             width: 80px;
             height: 80px;
             flex-shrink: 0;
-            border-radius: 8px;
-            border: 2px solid #e8edf5;
-            background-color: #f8faff;
-            overflow: hidden;
-            position: relative;
-        }
-        /* Screen logo */
-        .logo-img {
-            width: 100%;
-            height: 100%;
-            background-image: url('{{ asset('img/Su-logo.jpeg') }}');
-            background-size: cover;
-            background-position: center;
-        }
-        /* Print logo (hidden on screen) */
-        .logo-print {
-            display: none;
-            width: 100%;
-            height: 100%;
-        }
-        .logo-print img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        /* Fallback if image not found */
-        .logo-fallback {
-            display: none;
-            width: 100%;
-            height: 100%;
-            background: #1a3a5e;
-            color: white;
-            font-weight: 700;
-            font-size: 20px;
+            background: transparent;
+            border: none;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
-        .logo-img.error + .logo-fallback {
-            display: flex;
+        .logo-img-direct {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+            background: transparent;
         }
 
-        /* Company Info - Right Side */
-        .company-info {
-            flex: 1;
-        }
+        .company-info { flex: 1; }
         .company-info h1 {
             font-size: 28px;
             font-weight: 700;
@@ -132,9 +97,6 @@
             margin-top: 2px;
         }
 
-        /* ========================================== */
-        /* ===== INVOICE TITLE ===== */
-        /* ========================================== */
         .invoice-title {
             text-align: center;
             font-size: 22px;
@@ -146,23 +108,13 @@
             margin-bottom: 20px;
         }
 
-        /* ========================================== */
-        /* ===== PURCHASE INVOICE SECTION ===== */
-        /* ========================================== */
-        .purchase-section {
-            /* Content area for purchase details */
-        }
-
-        /* ===== PARTY & INFO ROW ===== */
         .info-row {
             display: flex;
             justify-content: space-between;
             gap: 30px;
             margin-bottom: 20px;
         }
-        .info-row .party {
-            flex: 1;
-        }
+        .info-row .party { flex: 1; }
         .info-row .party .label {
             font-size: 12px;
             color: #6b7f94;
@@ -197,7 +149,6 @@
             color: #1a2a3a;
         }
 
-        /* ===== ITEMS TABLE ===== */
         .items-table {
             width: 100%;
             border-collapse: collapse;
@@ -242,7 +193,6 @@
             display: block;
         }
 
-        /* ===== TOTALS ===== */
         .totals-section {
             display: flex;
             justify-content: flex-end;
@@ -293,7 +243,6 @@
             color: #1a3a5e;
         }
 
-        /* ===== PAYMENT TABLE ===== */
         .payment-section {
             margin-top: 20px;
             border-top: 1px solid #ecf0f5;
@@ -323,7 +272,6 @@
             text-align: right;
         }
 
-        /* ===== NOTES ===== */
         .notes-section {
             margin-top: 15px;
             font-size: 13px;
@@ -333,9 +281,6 @@
             border-radius: 6px;
         }
 
-        /* ========================================== */
-        /* ===== FOOTER ===== */
-        /* ========================================== */
         .invoice-footer {
             border-top: 2px solid #1a3a5e;
             padding-top: 15px;
@@ -345,12 +290,8 @@
             font-size: 12px;
             color: #6b7f94;
         }
-        .invoice-footer .terms {
-            flex: 1;
-        }
-        .invoice-footer .terms strong {
-            color: #1a2a3a;
-        }
+        .invoice-footer .terms { flex: 1; }
+        .invoice-footer .terms strong { color: #1a2a3a; }
         .invoice-footer .signature {
             text-align: right;
             flex-shrink: 0;
@@ -362,65 +303,19 @@
             margin-bottom: 4px;
         }
 
-        /* ========================================== */
-        /* ===== PRINT STYLES ===== */
-        /* ========================================== */
         @media print {
-            body { 
-                background: white !important; 
-                padding: 0 !important; 
-            }
-            .invoice-wrapper { 
-                box-shadow: none !important; 
-                border: none !important; 
-                padding: 20px !important; 
-                border-radius: 0 !important;
-            }
-            .top-actions { 
-                display: none !important; 
-            }
-            .no-print { 
-                display: none !important; 
-            }
-            
-            /* Show print logo, hide screen logo */
-            .logo-img {
-                display: none !important;
-            }
-            .logo-print {
-                display: block !important;
-            }
-            
-            .items-table thead th { 
-                background: #333 !important; 
-                -webkit-print-color-adjust: exact !important; 
-                print-color-adjust: exact !important; 
-            }
-            .totals-table .previous-balance td { 
-                background: #f5f5f5 !important; 
-                -webkit-print-color-adjust: exact !important; 
-                print-color-adjust: exact !important; 
-            }
-            .totals-table .net-balance td { 
-                background: #e8e8e8 !important; 
-                -webkit-print-color-adjust: exact !important; 
-                print-color-adjust: exact !important; 
-            }
-            .payment-table th {
-                background: #e8e8e8 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            .notes-section {
-                background: #f5f5f5 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
+            body { background: white !important; padding: 0 !important; }
+            .invoice-wrapper { box-shadow: none !important; border: none !important; padding: 20px !important; border-radius: 0 !important; }
+            .top-actions { display: none !important; }
+            .no-print { display: none !important; }
+            .logo-img-direct { display: block !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .items-table thead th { background: #333 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .totals-table .previous-balance td { background: #f5f5f5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .totals-table .net-balance td { background: #e8e8e8 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .payment-table th { background: #e8e8e8 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .notes-section { background: #f5f5f5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
 
-        /* ========================================== */
-        /* ===== RESPONSIVE ===== */
-        /* ========================================== */
         @media (max-width: 600px) {
             .invoice-wrapper { padding: 20px 15px; }
             .header-section { flex-direction: column; text-align: center; }
@@ -441,7 +336,6 @@
 
 <div class="invoice-wrapper" id="invoice-content">
     
-    {{-- ===== TOP ACTION BUTTONS ===== --}}
     <div class="top-actions no-print">
         <button class="btn btn-print" onclick="window.print()">
             <i class="fas fa-print"></i> Print Invoice
@@ -454,25 +348,11 @@
         </button>
     </div>
 
-    {{-- ========================================== --}}
-    {{-- ===== HEADER SECTION ===== --}}
-    {{-- ========================================== --}}
     <div class="header-section">
-        {{-- Logo - Left Side --}}
         <div class="logo-container">
-            {{-- Screen logo --}}
-            <div class="logo-img" onerror="this.className='logo-img error';"></div>
-            
-            {{-- Print logo --}}
-            <div class="logo-print">
-                <img src="{{ public_path('img/Su-logo.PNG') }}" alt="S.U Tools">
-            </div>
-            
-            {{-- Fallback if image not found --}}
-            <div class="logo-fallback">SU</div>
+            <img src="{{ asset('img/Su-logo.PNG') }}" alt="S.U Tools" class="logo-img-direct">
         </div>
 
-        {{-- Company Info - Right Side --}}
         <div class="company-info">
             <h1>S.U TOOLS</h1>
             <div class="tagline">Pakistan</div>
@@ -480,9 +360,6 @@
         </div>
     </div>
 
-    {{-- ========================================== --}}
-    {{-- ===== PURCHASE INVOICE SECTION ===== --}}
-    {{-- ========================================== --}}
     <div class="purchase-section">
         @yield('content')
     </div>
