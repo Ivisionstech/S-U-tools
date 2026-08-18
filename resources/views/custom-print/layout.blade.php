@@ -465,7 +465,7 @@
             
             {{-- Print logo --}}
             <div class="logo-print">
-                <img src="{{ public_path('img/Su-logo.jpeg') }}" alt="S.U Tools">
+                <img src="{{ public_path('img/Su-logo.PNG') }}" alt="S.U Tools">
             </div>
             
             {{-- Fallback if image not found --}}

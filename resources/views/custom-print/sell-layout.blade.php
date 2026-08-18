@@ -366,7 +366,7 @@
         <div class="logo-container">
             <div class="logo-img" onerror="this.className='logo-img error';"></div>
             <div class="logo-print">
-                <img src="{{ public_path('img/Su-logo.jpeg') }}" alt="S.U Tools">
+                <img src="{{ public_path('img/Su-logo.PNG') }}" alt="S.U Tools">
             </div>
             <div class="logo-fallback">SU</div>
         </div>
